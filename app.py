@@ -3,16 +3,24 @@ import streamlit as st
 import plotly_express as px
 
 df = pd.read_csv('vehicles_us.csv')
-#read the data
+
+# Extract manufacturer from model column
 df['manufacturer'] = df['model'].apply(lambda x: x.split()[0])
-df['is_4wd'] = df['is_4wd'].where(df['is_4wd'] != 1.0 , 'yes')
+
+# Replace 1.0 values in is_4wd column with 'yes' and fill missing values with 'no'
+df['is_4wd'] = df['is_4wd'].where(df['is_4wd'] != 1.0, 'yes')
 df['is_4wd'] = df['is_4wd'].fillna('no')
-df['model_year'] = df['model_year'].fillna(df.groupby('model')
-['model_year'].transform('median'))
-df['cylinders'] = df['cylinders'].fillna(df.groupby('model')
-['cylinders'].transform('median'))
-df['odometer'] = df['odometer'].fillna(df.groupby('model_year')
-['odometer'].transform('median'))
+
+# Fill missing values in model_year column with median values grouped by model
+df['model_year'] = df['model_year'].fillna(df.groupby('model')['model_year'].transform('median'))
+
+# Fill missing values in cylinders column with median values grouped by model
+df['cylinders'] = df['cylinders'].fillna(df.groupby('model')['cylinders'].transform('median'))
+
+# Fill missing values in odometer column with median values grouped by model_year
+df['odometer'] = df['odometer'].fillna(df.groupby('model_year')['odometer'].transform('median'))
+
+# Fill missing values in paint_color column with 'No info'
 df['paint_color'] = df['paint_color'].fillna('No info')
 #replace four wheel drive values with yes and no
 st.title('Figures on car sales')
